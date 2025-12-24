@@ -356,6 +356,12 @@ def collect_rollout(
     values = []
     log_probs = []
 
+    # 统计信息
+    episode_count = 0
+    win_count = 0
+    episode_lengths = []
+    current_episode_length = [0] * n_envs
+
     # 重置环境
     obs_list = [env.reset()[0] for env in envs]
 
@@ -389,8 +395,15 @@ def collect_rollout(
 
                 rewards.append(reward)
                 dones.append(done)
+                current_episode_length[i] += 1
 
                 if done:
+                    episode_count += 1
+                    episode_lengths.append(current_episode_length[i])
+                    current_episode_length[i] = 0
+                    # 检查是否获胜
+                    if info.get("winner") == "landlord" or reward > 0:
+                        win_count += 1
                     obs_list[i], _ = env.reset()
                 else:
                     obs_list[i] = next_obs
@@ -431,5 +444,11 @@ def collect_rollout(
     data["advantages"] = (data["advantages"] - data["advantages"].mean()) / (
         data["advantages"].std() + 1e-8
     )
+
+    # 添加统计信息
+    data["episode_count"] = episode_count
+    data["win_count"] = win_count
+    data["win_rate"] = win_count / episode_count if episode_count > 0 else 0.0
+    data["avg_episode_length"] = np.mean(episode_lengths) if episode_lengths else 0.0
 
     return data

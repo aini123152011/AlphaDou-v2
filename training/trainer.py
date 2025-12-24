@@ -252,8 +252,20 @@ class Trainer:
                 gae_lambda=self.config.gae_lambda,
             )
 
-            # 移动到设备
-            data = {k: v.to(self.device) for k, v in data.items()}
+            # 移动张量到设备 (跳过统计值)
+            tensor_keys = ["hand", "played_cards", "history", "last_action", "position",
+                          "bid_info", "cards_left", "actions", "rewards", "dones",
+                          "values", "log_probs", "advantages", "returns"]
+
+            # 提取统计信息
+            rollout_stats = {
+                "win_rate": data.get("win_rate", 0.0),
+                "avg_episode_length": data.get("avg_episode_length", 0.0),
+                "episode_count": data.get("episode_count", 0),
+            }
+
+            # 只保留张量数据用于训练
+            data = {k: v.to(self.device) for k, v in data.items() if k in tensor_keys}
             n_samples = len(data["actions"])
             self.total_frames += n_samples
 
@@ -279,6 +291,8 @@ class Trainer:
                 value_loss=avg_losses["value_loss"],
                 entropy=-avg_losses["entropy_loss"],
                 avg_reward=data["rewards"].mean().item(),
+                avg_length=rollout_stats["avg_episode_length"],
+                win_rate=rollout_stats["win_rate"],
                 lr=avg_losses["lr"],
                 fps=n_samples / step_time,
             )
@@ -291,6 +305,7 @@ class Trainer:
                     f"Frames {self.total_frames} | "
                     f"Loss {stats.loss:.4f} | "
                     f"Reward {stats.avg_reward:.2f} | "
+                    f"WinRate {stats.win_rate:.1%} | "
                     f"FPS {stats.fps:.0f} | "
                     f"Time {elapsed:.0f}s"
                 )
