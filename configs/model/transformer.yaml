@@ -1,0 +1,7 @@
+backbone_type: transformer
+input_channels: 40
+hidden_dim: 256
+num_layers: 6
+num_heads: 8
+dropout: 0.1
+action_dim: 27472

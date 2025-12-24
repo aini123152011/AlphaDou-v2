@@ -1,0 +1,12 @@
+learning_rate: 1e-4
+weight_decay: 1e-5
+batch_size: 256
+num_actors: 8
+num_threads: 2
+unroll_length: 100
+total_frames: 1_000_000_000
+save_interval: 2_000_000
+value_loss_coef: 0.5
+entropy_coef: 0.01
+max_grad_norm: 0.5
+exp_epsilon: 0.1

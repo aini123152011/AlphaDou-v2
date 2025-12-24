@@ -1,0 +1,9 @@
+# ResNet 基础模型配置
+backbone_type: resnet
+input_channels: 40
+hidden_dim: 512
+num_layers: 4
+action_dim: 309
+num_heads: 8
+dropout: 0.1
+use_se: true

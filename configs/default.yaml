@@ -1,0 +1,7 @@
+defaults:
+  - model: resnet
+  - training: dmc
+  - env: doudizhu
+
+seed: 42
+experiment_name: alphadou_v2_baseline

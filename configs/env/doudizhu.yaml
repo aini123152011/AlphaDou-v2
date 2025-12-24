@@ -1,0 +1,3 @@
+objective: adp
+history_length: 15
+reward_shaping: true

@@ -1,0 +1,10 @@
+# Transformer 模型配置
+backbone_type: transformer
+input_channels: 40
+hidden_dim: 512
+num_layers: 4
+action_dim: 309
+num_heads: 8
+ff_dim: 2048
+dropout: 0.1
+max_seq_len: 100
