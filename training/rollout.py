@@ -347,8 +347,9 @@ def collect_rollout(
     """
     envs = [env_fn() for _ in range(n_envs)]
 
-    # 初始化存储
-    observations = {key: [] for key in ["hand", "played_cards", "history"]}
+    # 初始化存储 - 包含模型所需的全部观测键
+    obs_keys = ["hand", "played_cards", "history", "last_action", "position", "bid_info", "cards_left"]
+    observations = {key: [] for key in obs_keys}
     actions = []
     rewards = []
     dones = []
@@ -362,11 +363,11 @@ def collect_rollout(
     with torch.no_grad():
         for step in range(n_steps // n_envs):
             for i, (env, obs) in enumerate(zip(envs, obs_list)):
-                # 转换观测
+                # 转换观测 - 包含模型所需的全部键
                 obs_tensor = {
                     k: torch.from_numpy(v).unsqueeze(0).to(device)
                     for k, v in obs.items()
-                    if k in ["hand", "played_cards", "history"]
+                    if k in obs_keys
                 }
 
                 # 获取动作
